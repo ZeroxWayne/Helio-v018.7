@@ -113,11 +113,11 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
               disabled={(date) => !isDateInRange(date)}
               className="rounded-[8px]"
               classNames={{
-                day_today: "!bg-accent/20 !text-black !rounded-md",
+                day_today: "!bg-accent/20 !text-black",
                 day_selected:
                   "!bg-white !text-black hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black",
-                day_range_start: "!rounded-l-md !rounded-r-none",
-                day_range_end: "!rounded-r-md !rounded-l-none",
+                day_range_start: "!rounded-md",
+                day_range_end: "!rounded-md",
                 day_range_middle: "!rounded-none",
               }}
             />
