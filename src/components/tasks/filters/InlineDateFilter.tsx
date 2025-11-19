@@ -118,7 +118,7 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
                   "!bg-white !text-black !rounded-md hover:!bg-white hover:!text-black focus:!bg-white focus:!text-black",
                 day_range_start: "!bg-white !text-black !rounded-md",
                 day_range_end: "!bg-white !text-black !rounded-md",
-                day_range_middle: "!bg-white/40 !text-white !rounded-none",
+                day_range_middle: "!bg-white !text-black !rounded-none",
               }}
             />
           </div>
