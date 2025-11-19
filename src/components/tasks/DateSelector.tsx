@@ -344,6 +344,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onSelect, onT
               className="rounded-[8px] transition-all duration-300 ease-in-out"
               classNames={{
                 cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+                day_today: "bg-white text-black rounded-full font-semibold",
                 day_selected:
                   "bg-white text-black hover:bg-white hover:text-black focus:bg-white focus:text-black rounded-full",
               }}
