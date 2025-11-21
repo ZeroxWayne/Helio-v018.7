@@ -28,6 +28,10 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
 
   const handleToggle = (checked: boolean) => {
     onToggle(checked);
+    // Auto-select "All" when toggling on with no selection
+    if (checked && !selectedDate) {
+      onSelect('All');
+    }
   };
 
   const togglePreset = (preset: string) => {
