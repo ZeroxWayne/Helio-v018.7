@@ -75,24 +75,26 @@ const InlineDateFilter: React.FC<InlineDateFilterProps> = ({
             className="w-full bg-transparent text-white text-sm px-0 py-2 outline-none placeholder-gray-500 border-none"
           />
 
-          <div className="flex-1 overflow-auto space-y-2 max-h-[250px]">
-            {filteredPresets.map((preset) => (
-              <Button
-                key={preset}
-                onClick={() => togglePreset(preset)}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  'w-full justify-start text-left bg-[#1b1b1b] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200',
-                  selectedDate === preset && 'bg-[#2e2e2e] text-white'
-                )}
-              >
-                <span className="flex-1">{preset}</span>
-                {selectedDate === preset && (
-                  <span className="text-green-400">✓</span>
-                )}
-              </Button>
-            ))}
+          <div className="flex-1 overflow-auto max-h-[250px]">
+            <div className="grid grid-cols-2 gap-2">
+              {filteredPresets.map((preset) => (
+                <Button
+                  key={preset}
+                  onClick={() => togglePreset(preset)}
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'w-full justify-center text-center bg-[#1b1b1b] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200',
+                    selectedDate === preset && 'bg-[#2e2e2e] text-white'
+                  )}
+                >
+                  {preset}
+                  {selectedDate === preset && (
+                    <span className="ml-1 text-green-400">✓</span>
+                  )}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {selectedDate && (
