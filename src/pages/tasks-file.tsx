@@ -193,7 +193,11 @@ const Tasks = () => {
       setEditTitle(taskToEdit.title);
       setEditDescription(taskToEdit.description);
       setEditPriority(taskToEdit.priority);
-      setEditDate(new Date(taskToEdit.dueDate));
+      setEditDate(taskToEdit.dueDate ? new Date(taskToEdit.dueDate) : undefined);
+      setSelectedTime(taskToEdit.time || '');
+      setSelectedReminder(taskToEdit.reminder);
+      setSelectedLabels(taskToEdit.labels || []);
+      setSelectedRepeat(taskToEdit.repeat || '');
     }
     setContextMenu(null);
   };
@@ -207,7 +211,11 @@ const Tasks = () => {
               title: editTitle.trim(),
               description: editDescription.trim(),
               priority: editPriority,
-              dueDate: editDate ? editDate.toLocaleDateString() : task.dueDate
+              dueDate: editDate ? editDate.toLocaleDateString() : task.dueDate,
+              time: selectedTime || task.time,
+              reminder: selectedReminder,
+              labels: selectedLabels,
+              repeat: selectedRepeat || undefined
             }
           : task
       );
@@ -218,6 +226,10 @@ const Tasks = () => {
       setEditDescription('');
       setEditPriority('');
       setEditDate(undefined);
+      setSelectedTime('');
+      setSelectedReminder(undefined);
+      setSelectedLabels([]);
+      setSelectedRepeat('');
     }
   };
 
@@ -227,6 +239,10 @@ const Tasks = () => {
     setEditDescription('');
     setEditPriority('');
     setEditDate(undefined);
+    setSelectedTime('');
+    setSelectedReminder(undefined);
+    setSelectedLabels([]);
+    setSelectedRepeat('');
   };
 
   const handleOpenTask = (taskId: string) => {
@@ -480,51 +496,233 @@ const Tasks = () => {
                           <h3 className="text-gray-400 text-sm font-semibold">{group.date}</h3>
                         </div>
                         {group.tasks.map((task) => (
-                          <TaskItem
-                            key={task.id}
-                            task={task}
-                            draggedTaskId={draggedTaskId}
-                            dragOverTaskId={dragOverTaskId}
-                            expandedLabelsTaskId={expandedLabelsTaskId}
-                            onContextMenu={handleContextMenu}
-                            onDragStart={handleDragStart}
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            onDragEnd={handleDragEnd}
-                            onToggle={handleToggleTask}
-                            onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
-                            onOpenTask={handleOpenTask}
-                            onEditTask={handleEditTask}
-                            onDeleteTask={handleDeleteTask}
-                            getLabelColor={getLabelColor}
-                            getPriorityStyle={getPriorityStyle}
-                          />
+                          editingTaskId === task.id ? (
+                            <div key={task.id} className="p-4 bg-transparent border border-[#525252] rounded-[20px] min-h-[160px] relative z-10 overflow-visible mt-4">
+                              {/* Section 1: Title */}
+                              <div className="mb-2">
+                                <Input
+                                  value={editTitle}
+                                  onChange={(e) => setEditTitle(e.target.value)}
+                                  placeholder="Task name"
+                                  className="w-full bg-transparent border-none text-white placeholder-gray-400 focus:outline-none focus:ring-0 px-0 py-1 text-base font-semibold"
+                                  autoFocus
+                                />
+                              </div>
+
+                              {/* Section 2: Description */}
+                              <div className="mb-4">
+                                <textarea
+                                  value={editDescription}
+                                  onChange={(e) => setEditDescription(e.target.value)}
+                                  placeholder="Description"
+                                  className="w-full bg-transparent border-none text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-0 px-0 py-1 resize-none min-h-[60px] text-sm"
+                                />
+                              </div>
+
+                              {/* Separator Line */}
+                              <div className="border-t border-[#414141] mb-4"></div>
+
+                              {/* Section 3: Bottom Section with Action Buttons and Main Buttons */}
+                              <div className="flex flex-wrap justify-between items-center gap-2 relative z-20">
+                                {/* Action Buttons in Middle (with border) */}
+                                <div className="border border-[#414141] rounded-[20px] p-2 flex flex-wrap gap-2 relative z-30 bg-[#1b1b1b]">
+                                  <DateSelector
+                                    selectedDate={editDate}
+                                    onSelect={setEditDate}
+                                    onTimeSelect={setSelectedTime}
+                                    selectedRepeat={selectedRepeat}
+                                    onRepeatSelect={setSelectedRepeat}
+                                  />
+                                  <PrioritySelector
+                                    selectedPriority={editPriority}
+                                    onSelect={setEditPriority}
+                                  />
+                                  <ReminderSelector
+                                    selectedReminder={selectedReminder}
+                                    onSelect={setSelectedReminder}
+                                    selectedDate={editDate}
+                                    selectedTime={selectedTime}
+                                  />
+                                  <LabelSelector
+                                    selectedLabels={selectedLabels}
+                                    onSelect={setSelectedLabels}
+                                  />
+                                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:border hover:border-[#252232] hover:bg-[#1e1e1f] hover:rounded-[8px] px-3 py-1 h-8 whitespace-nowrap transition-all duration-200 border border-transparent">
+                                    <Link className="h-4 w-4 mr-2" />
+                                    Link
+                                  </Button>
+                                </div>
+
+                                {/* Main Action Buttons on Right */}
+                                <div className="flex gap-2 flex-shrink-0">
+                                  <Button
+                                    onClick={handleCancelEdit}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="border border-[#690707] rounded-[10px] bg-[#391e1e] text-[crimson] hover:bg-[#391e1e] hover:text-[crimson]"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="border border-[#5f5c74] bg-[#13132f] rounded-[10px] text-[#dedede] hover:bg-[#13132f] hover:text-[#dedede]"
+                                  >
+                                    Draft
+                                  </Button>
+                                  <Button
+                                    onClick={handleSaveEdit}
+                                    size="sm"
+                                    disabled={!editTitle.trim()}
+                                    className={`border rounded-[14px] transition-all ${
+                                      editTitle.trim()
+                                        ? 'border-[#252232] bg-white text-[#252232] hover:bg-white hover:text-[#252232]'
+                                        : 'border-[#3a3a3a] bg-[#2a2a2a] text-[#5a5a5a] cursor-not-allowed'
+                                    }`}
+                                  >
+                                    Save
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <TaskItem
+                              key={task.id}
+                              task={task}
+                              draggedTaskId={draggedTaskId}
+                              dragOverTaskId={dragOverTaskId}
+                              expandedLabelsTaskId={expandedLabelsTaskId}
+                              onContextMenu={handleContextMenu}
+                              onDragStart={handleDragStart}
+                              onDragOver={handleDragOver}
+                              onDragLeave={handleDragLeave}
+                              onDrop={handleDrop}
+                              onDragEnd={handleDragEnd}
+                              onToggle={handleToggleTask}
+                              onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
+                              onOpenTask={handleOpenTask}
+                              onEditTask={handleEditTask}
+                              onDeleteTask={handleDeleteTask}
+                              getLabelColor={getLabelColor}
+                              getPriorityStyle={getPriorityStyle}
+                            />
+                          )
                         ))}
                       </div>
                     ))
                   ) : (
                     applyFiltersAndSort(tasks).map((task) => (
-                      <TaskItem
-                        key={task.id}
-                        task={task}
-                        draggedTaskId={draggedTaskId}
-                        dragOverTaskId={dragOverTaskId}
-                        expandedLabelsTaskId={expandedLabelsTaskId}
-                        onContextMenu={handleContextMenu}
-                        onDragStart={handleDragStart}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                        onDragEnd={handleDragEnd}
-                        onToggle={handleToggleTask}
-                        onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
-                        onOpenTask={handleOpenTask}
-                        onEditTask={handleEditTask}
-                        onDeleteTask={handleDeleteTask}
-                        getLabelColor={getLabelColor}
-                        getPriorityStyle={getPriorityStyle}
-                      />
+                      editingTaskId === task.id ? (
+                        <div key={task.id} className="p-4 bg-transparent border border-[#525252] rounded-[20px] min-h-[160px] relative z-10 overflow-visible mt-4">
+                          {/* Section 1: Title */}
+                          <div className="mb-2">
+                            <Input
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              placeholder="Task name"
+                              className="w-full bg-transparent border-none text-white placeholder-gray-400 focus:outline-none focus:ring-0 px-0 py-1 text-base font-semibold"
+                              autoFocus
+                            />
+                          </div>
+
+                          {/* Section 2: Description */}
+                          <div className="mb-4">
+                            <textarea
+                              value={editDescription}
+                              onChange={(e) => setEditDescription(e.target.value)}
+                              placeholder="Description"
+                              className="w-full bg-transparent border-none text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-0 px-0 py-1 resize-none min-h-[60px] text-sm"
+                            />
+                          </div>
+
+                          {/* Separator Line */}
+                          <div className="border-t border-[#414141] mb-4"></div>
+
+                          {/* Section 3: Bottom Section with Action Buttons and Main Buttons */}
+                          <div className="flex flex-wrap justify-between items-center gap-2 relative z-20">
+                            {/* Action Buttons in Middle (with border) */}
+                            <div className="border border-[#414141] rounded-[20px] p-2 flex flex-wrap gap-2 relative z-30 bg-[#1b1b1b]">
+                              <DateSelector
+                                selectedDate={editDate}
+                                onSelect={setEditDate}
+                                onTimeSelect={setSelectedTime}
+                                selectedRepeat={selectedRepeat}
+                                onRepeatSelect={setSelectedRepeat}
+                              />
+                              <PrioritySelector
+                                selectedPriority={editPriority}
+                                onSelect={setEditPriority}
+                              />
+                              <ReminderSelector
+                                selectedReminder={selectedReminder}
+                                onSelect={setSelectedReminder}
+                                selectedDate={editDate}
+                                selectedTime={selectedTime}
+                              />
+                              <LabelSelector
+                                selectedLabels={selectedLabels}
+                                onSelect={setSelectedLabels}
+                              />
+                              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:border hover:border-[#252232] hover:bg-[#1e1e1f] hover:rounded-[8px] px-3 py-1 h-8 whitespace-nowrap transition-all duration-200 border border-transparent">
+                                <Link className="h-4 w-4 mr-2" />
+                                Link
+                              </Button>
+                            </div>
+
+                            {/* Main Action Buttons on Right */}
+                            <div className="flex gap-2 flex-shrink-0">
+                              <Button
+                                onClick={handleCancelEdit}
+                                variant="ghost"
+                                size="sm"
+                                className="border border-[#690707] rounded-[10px] bg-[#391e1e] text-[crimson] hover:bg-[#391e1e] hover:text-[crimson]"
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="border border-[#5f5c74] bg-[#13132f] rounded-[10px] text-[#dedede] hover:bg-[#13132f] hover:text-[#dedede]"
+                              >
+                                Draft
+                              </Button>
+                              <Button
+                                onClick={handleSaveEdit}
+                                size="sm"
+                                disabled={!editTitle.trim()}
+                                className={`border rounded-[14px] transition-all ${
+                                  editTitle.trim()
+                                    ? 'border-[#252232] bg-white text-[#252232] hover:bg-white hover:text-[#252232]'
+                                    : 'border-[#3a3a3a] bg-[#2a2a2a] text-[#5a5a5a] cursor-not-allowed'
+                                }`}
+                              >
+                                Save
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <TaskItem
+                          key={task.id}
+                          task={task}
+                          draggedTaskId={draggedTaskId}
+                          dragOverTaskId={dragOverTaskId}
+                          expandedLabelsTaskId={expandedLabelsTaskId}
+                          onContextMenu={handleContextMenu}
+                          onDragStart={handleDragStart}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          onDragEnd={handleDragEnd}
+                          onToggle={handleToggleTask}
+                          onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
+                          onOpenTask={handleOpenTask}
+                          onEditTask={handleEditTask}
+                          onDeleteTask={handleDeleteTask}
+                          getLabelColor={getLabelColor}
+                          getPriorityStyle={getPriorityStyle}
+                        />
+                      )
                     ))
                   )}
                 </div>
@@ -681,80 +879,6 @@ const Tasks = () => {
         </div>
       )}
 
-      {/* Edit Task Modal */}
-      {editingTaskId && (
-        <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center" onClick={handleCancelEdit}>
-          <div
-            className="bg-[#1b1b1b] border border-[#525252] rounded-[20px] p-6 w-full max-w-[500px] max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-white text-xl font-semibold mb-4">Edit Task</h2>
-
-            {/* Title */}
-            <div className="mb-4">
-              <label className="text-gray-400 text-sm mb-2 block">Title</label>
-              <Input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                placeholder="Task title"
-                className="w-full bg-[#252525] border-[#414141] text-white placeholder-gray-400 focus:ring-0 focus:border-[#414141]"
-              />
-            </div>
-
-            {/* Description */}
-            <div className="mb-4">
-              <label className="text-gray-400 text-sm mb-2 block">Description</label>
-              <textarea
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                placeholder="Task description"
-                className="w-full bg-[#252525] border border-[#414141] text-white placeholder-gray-400 focus:ring-0 p-3 resize-none min-h-[100px] rounded-lg outline-none text-sm"
-              />
-            </div>
-
-            {/* Priority */}
-            <div className="mb-4">
-              <label className="text-gray-400 text-sm mb-2 block">Priority</label>
-              <select
-                value={editPriority}
-                onChange={(e) => setEditPriority(e.target.value)}
-                className="w-full bg-[#252525] border border-[#414141] text-white focus:ring-0 p-2 rounded-lg outline-none text-sm"
-              >
-                <option value="Priority 1">Priority 1</option>
-                <option value="Priority 2">Priority 2</option>
-                <option value="Priority 3">Priority 3</option>
-                <option value="Priority 4">Priority 4</option>
-                <option value="Priority 5">Priority 5</option>
-                <option value="Priority 6">Priority 6</option>
-              </select>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2 justify-end">
-              <Button
-                onClick={handleCancelEdit}
-                variant="ghost"
-                size="sm"
-                className="border border-[#690707] rounded-[10px] bg-[#391e1e] text-[crimson] hover:bg-[#391e1e] hover:text-[crimson]"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSaveEdit}
-                size="sm"
-                disabled={!editTitle.trim()}
-                className={`border rounded-[14px] transition-all ${
-                  editTitle.trim()
-                    ? 'border-[#252232] bg-white text-[#252232] hover:bg-white hover:text-[#252232]'
-                    : 'border-[#3a3a3a] bg-[#2a2a2a] text-[#5a5a5a] cursor-not-allowed'
-                }`}
-              >
-                Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
