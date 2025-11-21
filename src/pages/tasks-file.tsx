@@ -494,6 +494,9 @@ const Tasks = () => {
                             onDragEnd={handleDragEnd}
                             onToggle={handleToggleTask}
                             onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
+                            onOpenTask={handleOpenTask}
+                            onEditTask={handleEditTask}
+                            onDeleteTask={handleDeleteTask}
                             getLabelColor={getLabelColor}
                             getPriorityStyle={getPriorityStyle}
                           />
@@ -516,6 +519,9 @@ const Tasks = () => {
                         onDragEnd={handleDragEnd}
                         onToggle={handleToggleTask}
                         onToggleLabels={(taskId) => setExpandedLabelsTaskId(expandedLabelsTaskId === taskId ? null : taskId)}
+                        onOpenTask={handleOpenTask}
+                        onEditTask={handleEditTask}
+                        onDeleteTask={handleDeleteTask}
                         getLabelColor={getLabelColor}
                         getPriorityStyle={getPriorityStyle}
                       />

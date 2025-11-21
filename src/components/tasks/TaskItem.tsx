@@ -1,5 +1,5 @@
-import React from 'react';
-import { Calendar, Flag, Bell, Repeat, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, Flag, Bell, Repeat, Tag, ChevronRight, Edit, Trash2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +27,9 @@ interface TaskItemProps {
   onDragEnd: () => void;
   onToggle: (taskId: string) => void;
   onToggleLabels: (taskId: string) => void;
+  onOpenTask: (taskId: string) => void;
+  onEditTask: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
   getLabelColor: (labelName: string) => string;
   getPriorityStyle: (priorityName: string) => { bg: string; text: string };
 }
@@ -44,18 +47,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onDragEnd,
   onToggle,
   onToggleLabels,
+  onOpenTask,
+  onEditTask,
+  onDeleteTask,
   getLabelColor,
   getPriorityStyle,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
       key={task.id}
-      className={`rounded-[12px] p-4 bg-transparent hover:bg-[#1f1f1f] transition-all ${
+      className={`rounded-[12px] p-4 bg-transparent hover:bg-[#1f1f1f] transition-all relative ${
         draggedTaskId === task.id ? 'opacity-50' : ''
       } ${
         dragOverTaskId === task.id ? 'border border-blue-500' : ''
       }`}
       onContextMenu={(e) => onContextMenu(e, task.id)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
       onDragOver={(e) => onDragOver(e, task.id)}
@@ -90,6 +100,68 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        {/* Action buttons on hover */}
+        {isHovered && (
+          <div className="flex items-center gap-1 ml-auto">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenTask(task.id);
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-[#2a2a2a] text-gray-400 hover:text-white transition-all"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0 z-50">
+                  <p className="text-xs">Open</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditTask(task.id);
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-[#2a2a2a] text-gray-400 hover:text-white transition-all"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0 z-50">
+                  <p className="text-xs">Edit</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteTask(task.id);
+                    }}
+                    className="p-1.5 rounded-lg hover:bg-[#2a2a2a] text-gray-400 hover:text-white transition-all"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-[#1f1f1f] text-white rounded-xl border-0 z-50">
+                  <p className="text-xs">Delete</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
       </div>
 
       {task.description && (
