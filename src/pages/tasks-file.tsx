@@ -169,6 +169,70 @@ const Tasks = () => {
     }
   };
 
+  const handleSaveDraft = () => {
+    if (newTaskTitle.trim()) {
+      const currentDate = new Date();
+      const newTask: Task = {
+        id: Date.now().toString(),
+        title: newTaskTitle.trim(),
+        completed: false,
+        creationDate: currentDate.toLocaleDateString(),
+        dueDate: selectedDate ? selectedDate.toLocaleDateString() : undefined,
+        time: selectedTime ? selectedTime : undefined,
+        priority: selectedPriority,
+        description: newTaskDescription.trim(),
+        reminder: selectedReminder,
+        labels: selectedLabels,
+        repeat: selectedRepeat || undefined,
+        isDraft: true
+      };
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      localStorage.setItem('kario-tasks', JSON.stringify(updatedTasks));
+      setNewTaskTitle('');
+      setNewTaskDescription('');
+      setSelectedDate(undefined);
+      setSelectedTime('');
+      setSelectedPriority('Priority 3');
+      setSelectedReminder(undefined);
+      setSelectedLabels([]);
+      setSelectedRepeat('');
+      setIsAddingTask(false);
+    }
+  };
+
+  const handleSaveDraftEdit = () => {
+    if (editTitle.trim() && editingTaskId) {
+      const updatedTasks = tasks.map(task =>
+        task.id === editingTaskId
+          ? {
+              ...task,
+              title: editTitle.trim(),
+              description: editDescription.trim(),
+              priority: editPriority,
+              dueDate: editDate ? editDate.toLocaleDateString() : task.dueDate,
+              time: selectedTime || task.time,
+              reminder: selectedReminder,
+              labels: selectedLabels,
+              repeat: selectedRepeat || undefined,
+              isDraft: true
+            }
+          : task
+      );
+      setTasks(updatedTasks);
+      localStorage.setItem('kario-tasks', JSON.stringify(updatedTasks));
+      setEditingTaskId(null);
+      setEditTitle('');
+      setEditDescription('');
+      setEditPriority('');
+      setEditDate(undefined);
+      setSelectedTime('');
+      setSelectedReminder(undefined);
+      setSelectedLabels([]);
+      setSelectedRepeat('');
+    }
+  };
+
   const handleToggleTask = (taskId: string) => {
     const updatedTasks = tasks.map(task =>
       task.id === taskId ? { ...task, completed: !task.completed } : task
@@ -636,9 +700,15 @@ const Tasks = () => {
                                     Cancel
                                   </Button>
                                   <Button
+                                    onClick={handleSaveDraftEdit}
+                                    disabled={!editTitle.trim()}
                                     variant="ghost"
                                     size="sm"
-                                    className="border border-[#5f5c74] bg-[#13132f] rounded-[10px] text-[#dedede] hover:bg-[#13132f] hover:text-[#dedede]"
+                                    className={`border border-[#5f5c74] rounded-[10px] text-[#dedede] transition-all ${
+                                      editTitle.trim()
+                                        ? 'bg-[#13132f] hover:bg-[#13132f] hover:text-[#dedede]'
+                                        : 'bg-[#0d0d1a] opacity-50 cursor-not-allowed'
+                                    }`}
                                   >
                                     Draft
                                   </Button>
@@ -753,9 +823,15 @@ const Tasks = () => {
                                 Cancel
                               </Button>
                               <Button
+                                onClick={handleSaveDraftEdit}
+                                disabled={!editTitle.trim()}
                                 variant="ghost"
                                 size="sm"
-                                className="border border-[#5f5c74] bg-[#13132f] rounded-[10px] text-[#dedede] hover:bg-[#13132f] hover:text-[#dedede]"
+                                className={`border border-[#5f5c74] rounded-[10px] text-[#dedede] transition-all ${
+                                  editTitle.trim()
+                                    ? 'bg-[#13132f] hover:bg-[#13132f] hover:text-[#dedede]'
+                                    : 'bg-[#0d0d1a] opacity-50 cursor-not-allowed'
+                                }`}
                               >
                                 Draft
                               </Button>
@@ -875,9 +951,15 @@ const Tasks = () => {
                           Cancel
                         </Button>
                         <Button
+                          onClick={handleSaveDraft}
+                          disabled={!newTaskTitle.trim()}
                           variant="ghost"
                           size="sm"
-                          className="border border-[#5f5c74] bg-[#13132f] rounded-[10px] text-[#dedede] hover:bg-[#13132f] hover:text-[#dedede]"
+                          className={`border border-[#5f5c74] rounded-[10px] text-[#dedede] transition-all ${
+                            newTaskTitle.trim()
+                              ? 'bg-[#13132f] hover:bg-[#13132f] hover:text-[#dedede]'
+                              : 'bg-[#0d0d1a] opacity-50 cursor-not-allowed'
+                          }`}
                         >
                           Draft
                         </Button>
