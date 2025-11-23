@@ -43,10 +43,9 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-[#1f1f1f] rounded-[16px] w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
-        {/* Header Section */}
-        <div className="flex items-center justify-between p-6 border-b border-[#414141]">
-          <h2 className="text-xl font-bold text-white truncate">{task.title}</h2>
+      <div className="bg-[#1f1f1f] rounded-[20px] w-[500px] min-h-[800px] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
+        {/* Close Button */}
+        <div className="flex justify-end p-4">
           <button
             onClick={onClose}
             className="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors flex-shrink-0"
@@ -56,7 +55,7 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
         </div>
 
         {/* Task Details Section */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6">
           {/* Description */}
           {task.description && (
             <div>
@@ -155,7 +154,7 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
         </div>
 
         {/* Empty Section for Future Features */}
-        <div className="border-t border-[#414141] p-6 bg-[#161618] min-h-[120px] flex items-center justify-center text-gray-500 text-sm">
+        <div className="p-6 bg-[#161618] min-h-[100px] flex items-center justify-center text-gray-500 text-sm">
           <p>Additional features coming soon</p>
         </div>
       </div>
