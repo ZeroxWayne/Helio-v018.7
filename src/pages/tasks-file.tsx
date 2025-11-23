@@ -5,6 +5,7 @@ import PrioritySelector from '@/components/tasks/PrioritySelector';
 import ReminderSelector from '@/components/tasks/ReminderSelector';
 import LabelSelector from '@/components/tasks/LabelSelector';
 import TaskItem from '@/components/tasks/TaskItem';
+import TaskWindowModal from '@/components/tasks/TaskWindowModal';
 import { Plus, ChevronRight, MoveVertical as MoreVertical, Calendar, Flag, Bell, Tag, Link, Edit, Trash2, Repeat } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,7 @@ const Tasks = () => {
     const saved = localStorage.getItem('kario-filter-values');
     return saved ? JSON.parse(saved) : { date: '', priorities: [], labels: [] };
   });
+  const [selectedTaskForModal, setSelectedTaskForModal] = useState<Task | null>(null);
 
   // Save deleted tasks to localStorage
   React.useEffect(() => {
@@ -279,6 +281,10 @@ const Tasks = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setSelectedTaskForModal(null);
+  };
+
   const handleEditTask = (taskId: string) => {
     const taskToEdit = tasks.find(t => t.id === taskId);
     if (taskToEdit) {
@@ -286,7 +292,7 @@ const Tasks = () => {
       setEditTitle(taskToEdit.title);
       setEditDescription(taskToEdit.description);
       setEditPriority(taskToEdit.priority);
-      
+
       // Safely parse the date string
       let parsedDate: Date | undefined = undefined;
       if (taskToEdit.dueDate) {
@@ -358,7 +364,7 @@ const Tasks = () => {
   const handleOpenTask = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      handleEditTask(taskId);
+      setSelectedTaskForModal(task);
     }
     setContextMenu(null);
   };
@@ -1037,7 +1043,12 @@ const Tasks = () => {
         </div>
       )}
 
-
+      <TaskWindowModal
+        task={selectedTaskForModal}
+        onClose={handleCloseModal}
+        getLabelColor={getLabelColor}
+        getPriorityStyle={getPriorityStyle}
+      />
     </div>
   );
 };
