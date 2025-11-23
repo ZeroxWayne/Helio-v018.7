@@ -15,6 +15,7 @@ interface TaskItemProps {
     reminder?: string;
     labels?: string[];
     repeat?: string;
+    isDraft?: boolean;
   };
   draggedTaskId: string | null;
   dragOverTaskId: string | null;
@@ -97,14 +98,18 @@ const TaskItem: React.FC<TaskItemProps> = ({
     >
       <div className="flex items-center gap-2 mb-2">
         <div
-          className={`w-4 h-4 border-2 rounded-full cursor-pointer transition-colors flex-shrink-0 ${
+          className={`w-4 h-4 border-2 rounded-full transition-colors flex-shrink-0 ${
+            isDeleted || task.isDraft ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+          } ${
             task.completed
               ? 'bg-white border-white'
               : 'border-gray-400 hover:border-gray-300'
           }`}
           onClick={(e) => {
-            e.stopPropagation();
-            onToggle(task.id);
+            if (!isDeleted && !task.isDraft) {
+              e.stopPropagation();
+              onToggle(task.id);
+            }
           }}
         />
         <TooltipProvider delayDuration={100}>
