@@ -420,11 +420,13 @@ const Tasks = () => {
     if (currentTaskView === 'drafts') {
       filtered = filtered.filter(task => task.isDraft);
     } else if (currentTaskView === 'completed') {
-      filtered = filtered.filter(task => task.completed);
+      filtered = filtered.filter(task => task.completed && !task.isDraft);
     } else if (currentTaskView === 'pending') {
-      filtered = filtered.filter(task => !task.completed);
+      filtered = filtered.filter(task => !task.completed && !task.isDraft);
+    } else if (currentTaskView === 'total') {
+      filtered = filtered.filter(task => !task.isDraft);
     }
-    // 'total' shows all tasks, 'deleted' is handled separately
+    // 'deleted' is handled separately
 
     // Helper function to parse DD/MM/YYYY format
     const parseDate = (dateString: string): Date => {
