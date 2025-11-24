@@ -3,7 +3,6 @@ import { X, Calendar, Flag, Bell, Repeat, Tag, Plus, Check, Trash2, ChevronRight
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
 
 interface Subtask {
   id: string;
@@ -127,7 +126,7 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-[#1f1f1f] rounded-[20px] w-full max-w-[500px] h-auto max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
+      <div className="bg-[#1f1f1f] rounded-[20px] w-full min-w-[500px] max-w-[500px] h-auto max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
         {/* Close Button */}
         <div className="flex justify-end p-4">
           <button
@@ -156,20 +155,11 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
           {/* Task Metadata - Collapsible */}
           <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <CollapsibleTrigger className="flex items-center justify-between w-full">
                 <h3 className="text-sm font-semibold text-gray-400">Details</h3>
-                <CollapsibleTrigger asChild>
-                  <button
-                    className={cn(
-                      "p-2 hover:bg-[#2a2a2a] rounded-lg transition-all duration-200 flex-shrink-0",
-                      isDetailsOpen ? "transform" : ""
-                    )}
-                  >
-                    <ChevronRight className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isDetailsOpen ? 'transform rotate-90' : ''}`} />
-                  </button>
-                </CollapsibleTrigger>
-              </div>
-              <CollapsibleContent>
+                <ChevronRight className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isDetailsOpen ? 'rotate-90' : ''}`} />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Due Date */}
                   {(localTask.dueDate || localTask.time) && (
@@ -234,27 +224,27 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
                     </div>
                   )}
                 </div>
+
+                {/* Labels */}
+                {localTask.labels && localTask.labels.length > 0 && (
+                  <div className="pt-2 border-t border-[#414141]">
+                    <h4 className="text-sm font-semibold text-gray-400 mb-3">Labels</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {localTask.labels.map((label, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full"
+                        >
+                          <Tag className={`h-3 w-3 ${getLabelColor(label)}`} />
+                          <span className="text-xs text-gray-300">{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CollapsibleContent>
             </div>
           </Collapsible>
-
-          {/* Labels */}
-          {localTask.labels && localTask.labels.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-400 mb-3">Labels</h3>
-              <div className="flex flex-wrap gap-2">
-                {localTask.labels.map((label, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-[#252527] border border-[#414141] rounded-full"
-                  >
-                    <Tag className={`h-3 w-3 ${getLabelColor(label)}`} />
-                    <span className="text-xs text-gray-300">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Subtasks Section */}
           <div className="space-y-3">
