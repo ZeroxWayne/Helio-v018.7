@@ -3,19 +3,12 @@ import { X, Calendar, Flag, Bell, Repeat, Tag, Plus, Check, Trash2, ChevronRight
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import SubtaskCreationModal from './SubtaskCreationModal';
 
 interface Subtask {
   id: string;
   title: string;
   completed: boolean;
   creationDate: string;
-  description?: string;
-  priority?: string;
-  dueDate?: string;
-  time?: string;
-  reminder?: string;
-  labels?: string[];
 }
 
 interface Task {
@@ -53,7 +46,6 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [localTask, setLocalTask] = useState<Task | null>(task);
-  const [isSubtaskModalOpen, setIsSubtaskModalOpen] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -70,39 +62,28 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
     }
   };
 
-  const handleCloseButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onClose();
-  };
+  const handleAddSubtask = () => {
+    if (newSubtaskTitle.trim()) {
+      const newSubtask: Subtask = {
+        id: Date.now().toString(),
+        title: newSubtaskTitle.trim(),
+        completed: false,
+        creationDate: new Date().toLocaleDateString(),
+      };
+      const updatedSubtasks = [...subtasks, newSubtask];
+      setSubtasks(updatedSubtasks);
+      setNewSubtaskTitle('');
 
-  const handleAddSubtask = (subtaskData: {
-    title: string;
-    description: string;
-    priority: string;
-    dueDate?: string;
-    time?: string;
-    reminder?: string;
-    labels?: string[];
-  }) => {
-    const newSubtask: Subtask = {
-      id: Date.now().toString(),
-      ...subtaskData,
-      completed: false,
-      creationDate: new Date().toLocaleDateString(),
-    };
-    const updatedSubtasks = [...subtasks, newSubtask];
-    setSubtasks(updatedSubtasks);
+      const updatedTask = { ...localTask, subtasks: updatedSubtasks };
+      setLocalTask(updatedTask);
+      if (onTaskUpdate) onTaskUpdate(updatedTask);
 
-    const updatedTask = { ...localTask, subtasks: updatedSubtasks };
-    setLocalTask(updatedTask);
-    if (onTaskUpdate) onTaskUpdate(updatedTask);
-
-    const savedTasks = localStorage.getItem('kario-tasks');
-    if (savedTasks) {
-      const tasks = JSON.parse(savedTasks);
-      const updatedTasks = tasks.map((t: Task) => t.id === localTask.id ? updatedTask : t);
-      localStorage.setItem('kario-tasks', JSON.stringify(updatedTasks));
+      const savedTasks = localStorage.getItem('kario-tasks');
+      if (savedTasks) {
+        const tasks = JSON.parse(savedTasks);
+        const updatedTasks = tasks.map((t: Task) => t.id === localTask.id ? updatedTask : t);
+        localStorage.setItem('kario-tasks', JSON.stringify(updatedTasks));
+      }
     }
   };
 
@@ -149,7 +130,7 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
         {/* Close Button */}
         <div className="flex justify-end p-4">
           <button
-            onClick={handleCloseButtonClick}
+            onClick={onClose}
             className="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors flex-shrink-0"
           >
             <X className="h-5 w-5 text-gray-400 hover:text-white" />
@@ -266,17 +247,17 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
           </Collapsible>
 
           {/* Subtasks Section */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-400">Subtasks</h3>
 
             {/* Subtasks List */}
             {subtasks.length > 0 && (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+              <div className="space-y-2">
                 {subtasks.map((subtask) => (
-                  <div key={subtask.id} className="flex items-start gap-3 p-3 hover:bg-[#2a2a2a] rounded-lg transition-colors">
+                  <div key={subtask.id} className="flex items-center gap-3 p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors">
                     <button
                       onClick={() => handleToggleSubtask(subtask.id)}
-                      className="flex-shrink-0 mt-1"
+                      className="flex-shrink-0"
                     >
                       {subtask.completed ? (
                         <Check className="h-4 w-4 text-green-400" />
@@ -284,30 +265,9 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
                         <div className="h-4 w-4 border border-gray-400 rounded" />
                       )}
                     </button>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium ${subtask.completed ? 'text-gray-500 line-through' : 'text-white'}`}>
-                        {subtask.title}
-                      </p>
-                      {subtask.description && (
-                        <p className={`text-xs mt-1 ${subtask.completed ? 'text-gray-600' : 'text-gray-400'}`}>
-                          {subtask.description}
-                        </p>
-                      )}
-                      {(subtask.dueDate || subtask.priority) && (
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          {subtask.dueDate && (
-                            <span className="text-xs px-2 py-1 bg-[#252527] rounded-full text-gray-300">
-                              {subtask.dueDate}
-                            </span>
-                          )}
-                          {subtask.priority && (
-                            <span className="text-xs px-2 py-1 bg-[#252527] rounded-full text-gray-300">
-                              {subtask.priority}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <span className={`text-sm flex-1 ${subtask.completed ? 'text-gray-500 line-through' : 'text-white'}`}>
+                      {subtask.title}
+                    </span>
                     <button
                       onClick={() => handleDeleteSubtask(subtask.id)}
                       className="flex-shrink-0 p-1 hover:bg-red-500/10 rounded transition-colors"
@@ -319,14 +279,27 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
               </div>
             )}
 
-            {/* Add Subtask Button */}
-            <button
-              onClick={() => setIsSubtaskModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-300 hover:text-white bg-[#252527] hover:bg-[#2a2a2a] border border-[#414141] rounded-lg transition-all duration-200 w-full"
-            >
-              <Plus className="h-4 w-4" />
-              Add a Subtask
-            </button>
+            {/* Add Subtask Input */}
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Add a subtask..."
+                value={newSubtaskTitle}
+                onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddSubtask();
+                  }
+                }}
+                className="bg-[#252527] border border-[#414141] text-white placeholder-gray-500 text-sm h-8"
+              />
+              <button
+                onClick={handleAddSubtask}
+                className="flex-shrink-0 p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors"
+              >
+                <Plus className="h-4 w-4 text-gray-400 hover:text-white" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -335,16 +308,6 @@ const TaskWindowModal: React.FC<TaskWindowModalProps> = ({
           <p>Additional features coming soon</p>
         </div>
       </div>
-
-      {/* Subtask Creation Modal */}
-      {isSubtaskModalOpen && (
-        <SubtaskCreationModal
-          onClose={() => setIsSubtaskModalOpen(false)}
-          onSubmit={handleAddSubtask}
-          getLabelColor={getLabelColor}
-          getPriorityStyle={getPriorityStyle}
-        />
-      )}
     </div>
   );
 };
