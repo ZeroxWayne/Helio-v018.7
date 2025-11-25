@@ -23,8 +23,6 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ selectedLabels, onSelect 
   });
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string>('text-blue-500');
-  const [tempSelectedLabels, setTempSelectedLabels] = useState<string[]>(selectedLabels);
-  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const colorOptions = [
     { name: 'red', class: 'text-red-500' },
@@ -82,14 +80,13 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ selectedLabels, onSelect 
   };
 
   const handleToggleLabel = (labelName: string) => {
-    if (tempSelectedLabels.includes(labelName)) {
-      setTempSelectedLabels(tempSelectedLabels.filter(l => l !== labelName));
+    if (selectedLabels.includes(labelName)) {
+      onSelect(selectedLabels.filter(l => l !== labelName));
     } else {
-      if (tempSelectedLabels.length < 3) {
-        setTempSelectedLabels([...tempSelectedLabels, labelName]);
+      if (selectedLabels.length < 3) {
+        onSelect([...selectedLabels, labelName]);
       }
     }
-    setShowConfirmation(true);
   };
 
   const handleDeleteLabel = (labelName: string, e: React.MouseEvent) => {
@@ -128,26 +125,6 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ selectedLabels, onSelect 
     if (selectedLabels.length === 0) return 'text-gray-400';
     const lastSelectedLabel = selectedLabels[selectedLabels.length - 1];
     return getLabelColor(lastSelectedLabel);
-  };
-
-  const getRandomSaveMessage = () => {
-    const messages = [
-      'save?',
-      'looks good?',
-      'confirm?',
-      'this one?',
-      'lock it in?',
-      'keep this?',
-      'done?',
-      'all set?'
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-
-  const handleConfirmLabels = () => {
-    onSelect(tempSelectedLabels);
-    setShowConfirmation(false);
-    setOpen(false);
   };
 
   return (
@@ -236,16 +213,17 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ selectedLabels, onSelect 
                     variant="ghost"
                     size="sm"
                     onClick={() => handleToggleLabel(label.name)}
-                    disabled={!tempSelectedLabels.includes(label.name) && tempSelectedLabels.length >= 3}
+                    disabled={!selectedLabels.includes(label.name) && selectedLabels.length >= 3}
                     className={cn(
-                      "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
-                      tempSelectedLabels.includes(label.name)
-                        ? "bg-white text-black hover:bg-white hover:text-black"
-                        : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+                      "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                      selectedLabels.includes(label.name) && "bg-[#2e2e2e] text-white"
                     )}
                   >
-                    <Tag className="h-4 w-4 mr-2" style={{ color: tempSelectedLabels.includes(label.name) ? 'black' : label.color }} />
+                    <Tag className={cn("h-4 w-4 mr-2", label.color)} />
                     #{label.name}
+                    {selectedLabels.includes(label.name) && (
+                      <span className="ml-auto text-green-400 group-hover:hidden">✓</span>
+                    )}
                   </Button>
                   <button
                     onClick={(e) => handleDeleteLabel(label.name, e)}
@@ -268,35 +246,20 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ selectedLabels, onSelect 
                 variant="ghost"
                 size="sm"
                 onClick={() => handleToggleLabel(preset.name)}
-                disabled={!tempSelectedLabels.includes(preset.name) && tempSelectedLabels.length >= 3}
+                disabled={!selectedLabels.includes(preset.name) && selectedLabels.length >= 3}
                 className={cn(
-                  "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
-                  tempSelectedLabels.includes(preset.name)
-                    ? "bg-white text-black hover:bg-white hover:text-black"
-                    : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+                  "w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                  selectedLabels.includes(preset.name) && "bg-[#2e2e2e] text-white"
                 )}
               >
-                <Tag className="h-4 w-4 mr-2" style={{ color: tempSelectedLabels.includes(preset.name) ? 'black' : preset.color }} />
+                <Tag className={cn("h-4 w-4 mr-2", preset.color)} />
                 {preset.name}
+                {selectedLabels.includes(preset.name) && (
+                  <span className="ml-auto text-green-400">✓</span>
+                )}
               </Button>
             ))}
           </div>
-
-          {showConfirmation && (
-            <div className="p-3 text-center">
-              <button
-                onClick={handleConfirmLabels}
-                className="text-gray-400 hover:text-white text-sm transition-colors duration-200 cursor-pointer underline decoration-dotted underline-offset-4 italic"
-                style={{
-                  fontFamily: 'monospace',
-                  imageRendering: 'pixelated',
-                  textRendering: 'optimizeSpeed'
-                }}
-              >
-                {getRandomSaveMessage()}
-              </button>
-            </div>
-          )}
         </div>
       </PopoverContent>
     </Popover>
