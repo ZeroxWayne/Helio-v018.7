@@ -108,27 +108,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ selectedPriority, o
 
   const getPriorityBg = (priority: string, isSelected: boolean) => {
     if (!isSelected) return 'bg-[#252525] text-gray-300 hover:bg-white hover:text-black';
-
-    if (priority.startsWith('Priority ')) {
-      const level = parseInt(priority.replace('Priority ', ''));
-      switch (level) {
-        case 1:
-          return 'bg-red-500/20 text-red-400 hover:bg-red-500/20';
-        case 2:
-          return 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/20';
-        case 3:
-          return 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20';
-        case 4:
-          return 'bg-green-500/20 text-green-400 hover:bg-green-500/20';
-        case 5:
-          return 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/20';
-        case 6:
-          return 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/20';
-        default:
-          return 'bg-[#252525] text-gray-300';
-      }
-    }
-    return 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/20';
+    return 'bg-white text-black hover:bg-white hover:text-black';
   };
 
   useEffect(() => {
@@ -292,7 +272,7 @@ const PrioritySelector: React.FC<PrioritySelectorProps> = ({ selectedPriority, o
                   getPriorityBg(`Priority ${priority.level}`, tempSelectedPriority === `Priority ${priority.level}`)
                 )}
               >
-                <Flag className={`h-4 w-4 ${priority.color}`} />
+                <Flag className="h-4 w-4" style={{ color: tempSelectedPriority === `Priority ${priority.level}` ? 'black' : priority.color }} />
                 Priority {priority.level}
               </Button>
             ))}

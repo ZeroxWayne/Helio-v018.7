@@ -43,7 +43,7 @@ const Tasks = () => {
   const [isSectionExpanded, setIsSectionExpanded] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
-  const [selectedPriority, setSelectedPriority] = useState<string>('Priority 3');
+  const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedReminder, setSelectedReminder] = useState<string | undefined>();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; taskId: string } | null>(null);
@@ -149,12 +149,12 @@ const Tasks = () => {
         creationDate: currentDate.toLocaleDateString(),
         dueDate: selectedDate ? selectedDate.toLocaleDateString() : undefined,
         time: selectedTime ? selectedTime : undefined,
-        priority: selectedPriority,
+        priority: selectedPriority || undefined,
         description: newTaskDescription.trim(),
         reminder: selectedReminder,
         labels: selectedLabels,
         repeat: selectedRepeat || undefined,
-        isDraft: !selectedDate && !newTaskDescription.trim() // Mark as draft if no date or description
+        isDraft: !selectedDate || !newTaskDescription.trim() // Mark as draft if no date OR no description
       };
       const updatedTasks = [...tasks, newTask];
       setTasks(updatedTasks);
@@ -163,7 +163,7 @@ const Tasks = () => {
       setNewTaskDescription('');
       setSelectedDate(undefined);
       setSelectedTime('');
-      setSelectedPriority('Priority 3');
+      setSelectedPriority('');
       setSelectedReminder(undefined);
       setSelectedLabels([]);
       setSelectedRepeat('');
@@ -181,7 +181,7 @@ const Tasks = () => {
         creationDate: currentDate.toLocaleDateString(),
         dueDate: selectedDate ? selectedDate.toLocaleDateString() : undefined,
         time: selectedTime ? selectedTime : undefined,
-        priority: selectedPriority,
+        priority: selectedPriority || undefined,
         description: newTaskDescription.trim(),
         reminder: selectedReminder,
         labels: selectedLabels,
@@ -195,7 +195,7 @@ const Tasks = () => {
       setNewTaskDescription('');
       setSelectedDate(undefined);
       setSelectedTime('');
-      setSelectedPriority('Priority 3');
+      setSelectedPriority('');
       setSelectedReminder(undefined);
       setSelectedLabels([]);
       setSelectedRepeat('');
@@ -211,7 +211,7 @@ const Tasks = () => {
               ...task,
               title: editTitle.trim(),
               description: editDescription.trim(),
-              priority: editPriority,
+              priority: editPriority || undefined,
               dueDate: editDate ? editDate.toLocaleDateString() : task.dueDate,
               time: selectedTime || task.time,
               reminder: selectedReminder,
@@ -325,13 +325,13 @@ const Tasks = () => {
               ...task,
               title: editTitle.trim(),
               description: editDescription.trim(),
-              priority: editPriority,
+              priority: editPriority || undefined,
               dueDate: editDate ? editDate.toLocaleDateString() : task.dueDate,
               time: selectedTime || task.time,
               reminder: selectedReminder,
               labels: selectedLabels,
               repeat: selectedRepeat || undefined,
-              isDraft: !editDate && !editDescription.trim() // Update draft status
+              isDraft: !editDate || !editDescription.trim() // Update draft status if no date OR no description
             }
           : task
       );

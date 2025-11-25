@@ -98,7 +98,6 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
     }
     setTempSelectedReminder(value);
     onSelect(value);
-    setOpen(false);
   };
 
   const handleApplyCustom = () => {
@@ -240,9 +239,14 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
                     size="sm"
                     onClick={() => handleReminderSelect(customRem.value)}
                     disabled={!selectedDate || !selectedTime}
-                    className="w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={cn(
+                      "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                      tempSelectedReminder === customRem.value
+                        ? "bg-white text-black hover:bg-white hover:text-black"
+                        : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+                    )}
                   >
-                    <Bell className="h-4 w-4 mr-2" />
+                    <Bell className="h-4 w-4 mr-2" style={{ color: tempSelectedReminder === customRem.value ? 'black' : 'currentColor' }} />
                     {customRem.label}
                   </Button>
                   <button
@@ -265,9 +269,14 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
               size="sm"
               onClick={() => handleReminderSelect('at-time')}
               disabled={!selectedDate || !selectedTime}
-              className="w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                tempSelectedReminder === 'at-time'
+                  ? "bg-white text-black hover:bg-white hover:text-black"
+                  : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+              )}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-4 w-4 mr-2" style={{ color: tempSelectedReminder === 'at-time' ? 'black' : 'currentColor' }} />
               At the time of the tasks
             </Button>
             <Button
@@ -275,9 +284,14 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
               size="sm"
               onClick={() => handleReminderSelect('10m')}
               disabled={!selectedDate || !selectedTime}
-              className="w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                tempSelectedReminder === '10m'
+                  ? "bg-white text-black hover:bg-white hover:text-black"
+                  : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+              )}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-4 w-4 mr-2" style={{ color: tempSelectedReminder === '10m' ? 'black' : 'currentColor' }} />
               10 minutes before
             </Button>
             <Button
@@ -285,9 +299,14 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
               size="sm"
               onClick={() => handleReminderSelect('30m')}
               disabled={!selectedDate || !selectedTime}
-              className="w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                tempSelectedReminder === '30m'
+                  ? "bg-white text-black hover:bg-white hover:text-black"
+                  : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+              )}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-4 w-4 mr-2" style={{ color: tempSelectedReminder === '30m' ? 'black' : 'currentColor' }} />
               30 minutes before
             </Button>
             <Button
@@ -295,9 +314,14 @@ const ReminderSelector: React.FC<ReminderSelectorProps> = ({ selectedReminder, o
               size="sm"
               onClick={() => handleReminderSelect('1h')}
               disabled={!selectedDate || !selectedTime}
-              className="w-full justify-start text-left bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={cn(
+                "w-full justify-start text-left border border-[#414141] rounded-[15px] h-9 text-xs transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+                tempSelectedReminder === '1h'
+                  ? "bg-white text-black hover:bg-white hover:text-black"
+                  : "bg-[#252525] text-gray-300 hover:bg-[#2e2e2e] hover:text-white"
+              )}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-4 w-4 mr-2" style={{ color: tempSelectedReminder === '1h' ? 'black' : 'currentColor' }} />
               1 hour before
             </Button>
           </div>
